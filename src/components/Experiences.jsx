@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { supabase } from './supabaseClient';
+import  { useState, useEffect } from 'react';
+import { supabase } from '../supabaseClient';
 import ExperienceItem from './ExperienceItem';
 import { Button, Input } from '@nextui-org/react';
+import PropTypes from 'prop-types';
 
 const Experiences = ({ job }) => {
   const [experiences, setExperiences] = useState([]);
@@ -60,5 +61,10 @@ const Experiences = ({ job }) => {
     </div>
   );
 };
-
+Experiences.propTypes = {
+    job: PropTypes.shape({
+      id: PropTypes.string.isRequired,          // Unique ID of the job
+      company: PropTypes.string.isRequired,      // Company name
+    }).isRequired,
+  };
 export default Experiences;

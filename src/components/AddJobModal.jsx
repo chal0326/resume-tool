@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Modal, Input, Button } from '@nextui-org/react';
+import PropTypes from 'prop-types';
 
 const AddJobModal = ({ show, onClose, onAddJob }) => {
   const [newJob, setNewJob] = useState({
@@ -71,5 +72,9 @@ const AddJobModal = ({ show, onClose, onAddJob }) => {
     </Modal>
   );
 };
-
+AddJobModal.propTypes = {
+    show: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+    onAddJob: PropTypes.func.isRequired,
+  };
 export default AddJobModal;

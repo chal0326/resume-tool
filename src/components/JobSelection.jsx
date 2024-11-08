@@ -1,5 +1,6 @@
-import React from 'react';
+//import React from 'react';
 import { Button } from '@nextui-org/react';
+import PropTypes from 'prop-types';
 
 const JobSelection = ({ jobs, setShowJobModal, setSelectedJob }) => (
   <div className="mb-6">
@@ -27,5 +28,20 @@ const JobSelection = ({ jobs, setShowJobModal, setSelectedJob }) => (
     </div>
   </div>
 );
-
+JobSelection.propTypes = {
+    jobs: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        job_title: PropTypes.string.isRequired,
+        company: PropTypes.string.isRequired,
+      })
+    ).isRequired,
+    setShowJobModal: PropTypes.func.isRequired,
+    setSelectedJob: PropTypes.func.isRequired,
+  };
+  
+  JobSelection.defaultProps = {
+    jobs: [],
+  };
+  
 export default JobSelection;

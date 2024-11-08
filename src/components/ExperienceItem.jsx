@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { supabase } from './supabaseClient';
+import  { useState, useEffect } from 'react';
+import { supabase } from '../supabaseClient';
 import { Button, Input } from '@nextui-org/react';
 import { motion } from 'framer-motion';
+import PropTypes from 'prop-types';
 
 const ExperienceItem = ({ experience }) => {
   const [skills, setSkills] = useState([]);
@@ -69,5 +70,10 @@ const ExperienceItem = ({ experience }) => {
     </motion.div>
   );
 };
-
+ExperienceItem.propTypes = {
+    experience: PropTypes.shape({
+      id: PropTypes.string.isRequired,           // Unique ID of the experience
+      experience_text: PropTypes.string.isRequired, // Description of the experience
+    }).isRequired,
+  };
 export default ExperienceItem;

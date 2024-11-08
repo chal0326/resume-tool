@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { supabase } from './supabaseClient';
+import { useState, useEffect, useContext } from 'react';
+import { supabase } from '../supabaseClient';
 import { AuthContext } from './AuthContext';
 import JobSelection from './JobSelection';
 import AddJobModal from './AddJobModal';
 import Experiences from './Experiences';
 import { Button } from '@nextui-org/react';
+
 
 const WorkHistory = () => {
   const { user } = useContext(AuthContext);

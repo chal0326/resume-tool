@@ -1,10 +1,10 @@
-import React from 'react';
+///import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Login from './Login';
 import Register from './Register';
 import Dashboard from './Dashboard';
-import WorkHistory from './WorkHistory';
-import ProtectedRoute from '../ProtectedRoute';
+import WorkHistory from './components/WorkHistory';
+import ProtectedRoute from './components/ProtectedRoute';
 import ResumeUpload from './ResumeUpload';
 
 
