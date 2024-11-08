@@ -1,18 +1,18 @@
 import { useState, useContext } from 'react';
-import { AuthContext } from '/authContext';
+import { AuthContext } from '/src/AuthContext.js';
 import PropTypes from 'prop-types';
 
 const ResumeUpload = () => {
   const { user } = useContext(AuthContext);
   const [resumeText, setResumeText] = useState('');
   const [parsing, setParsing] = useState(false);
-  const [parsedData, setParsedData] = useState([]);
-
-  if (!user) {
-    return <p>Please log in to upload a resume.</p>;
-  }
 
   const handleParseResume = () => {
+    if (!user) {
+      alert('You must be logged in to parse your resume.');
+      return;
+    }
+
     setParsing(true);
 
     // Regex to extract job titles and companies from resume text (placeholder example)
@@ -24,38 +24,34 @@ const ResumeUpload = () => {
       company: companyEntries[index] ? companyEntries[index][1].trim() : 'Unknown Company'
     }));
 
-    setParsedData(parsedJobs);
+    console.log(parsedJobs); // Optional: For debugging
+
     setParsing(false);
   };
 
   return (
     <div className="min-h-screen p-8 bg-gradient-to-br from-gray-800 to-gray-900 text-white">
-      <h1 className="text-3xl mb-6">Upload Your Resume</h1>
-      <textarea
-        className="w-full h-64 p-4 bg-gray-700 rounded mb-4"
-        placeholder="Paste your resume text here..."
-        value={resumeText}
-        onChange={(e) => setResumeText(e.target.value)}
-      ></textarea>
-      <button
-        onClick={handleParseResume}
-        className="bg-green-500 p-2 rounded hover:bg-green-600 transition"
-        disabled={parsing}
-      >
-        {parsing ? 'Parsing...' : 'Parse Resume'}
-      </button>
-
-      {parsedData.length > 0 && (
-        <div className="mt-6">
-          <h2 className="text-2xl mb-4">Parsed Data</h2>
-          <ul className="list-disc list-inside">
-            {parsedData.map((job, index) => (
-              <li key={index}>
-                <strong>Job Title:</strong> {job.title} <br />
-                <strong>Company:</strong> {job.company}
-              </li>
-            ))}
-          </ul>
+      {user ? (
+        <>
+          <h1 className="text-3xl mb-6">Upload Your Resume</h1>
+          <textarea
+            className="w-full h-64 p-4 bg-gray-700 rounded mb-4"
+            placeholder="Paste your resume text here..."
+            value={resumeText}
+            onChange={(e) => setResumeText(e.target.value)}
+          ></textarea>
+          <button
+            onClick={handleParseResume}
+            className="bg-green-500 p-2 rounded hover:bg-green-600 transition"
+            disabled={parsing}
+          >
+            {parsing ? 'Parsing...' : 'Parse Resume'}
+          </button>
+        </>
+      ) : (
+        <div>
+          <h1 className="text-3xl mb-6">Please Log In</h1>
+          <p>You must be logged in to upload and parse your resume.</p>
         </div>
       )}
     </div>

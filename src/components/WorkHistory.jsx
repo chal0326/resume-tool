@@ -1,7 +1,23 @@
 import { useState, useContext } from 'react';
-import { AuthContext } from './authContext';
+import { AuthContext } from '/src/AuthContext.js';
 import PropTypes from 'prop-types';
 
+/**
+ * Component for uploading and parsing resume text.
+ * Allows users to paste their resume text into a textarea.
+ * Upon clicking the "Parse Resume" button, attempts to extract job titles and companies
+ * using regular expressions and displays the parsed results.
+ * 
+ * Utilizes `AuthContext` to ensure the user is logged in before allowing resume uploads.
+ * 
+ * States:
+ * - `resumeText`: Stores the text input from the user.
+ * - `parsing`: Boolean indicating if the resume is currently being parsed.
+ * - `parsedData`: Array of objects containing parsed job titles and companies.
+ * 
+ * Returns a UI for uploading and parsing resumes, including a textarea for input
+ * and a button to initiate parsing. Displays parsed job titles and companies upon success.
+ */
 const ResumeUpload = () => {
   const { user } = useContext(AuthContext);
   const [resumeText, setResumeText] = useState('');
@@ -9,6 +25,10 @@ const ResumeUpload = () => {
   const [parsedData, setParsedData] = useState([]);
 
   const handleParseResume = () => {
+    if (!user) {
+      alert('You must be logged in to parse your resume.');
+      return;
+    }
     setParsing(true);
 
     // Regex to extract job titles and companies from resume text (placeholder example)
