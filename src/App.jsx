@@ -4,8 +4,8 @@ import Login from './Login';
 import Register from './Register';
 import Dashboard from './Dashboard';
 import WorkHistory from './components/WorkHistory';
-import ProtectedRoute from './components/ProtectedRoute';
-import ResumeUpload from './ResumeUpload';
+import ProtectedRoute from './protectedRoute';
+import ResumeUpload from './components/ResumeUpload';
 
 
 const App = () => {

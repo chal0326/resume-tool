@@ -1,24 +1,30 @@
 import { useState, useContext } from 'react';
-import { supabase } from './supabaseClient';
-import { AuthContext } from './AuthContext';
+import { AuthContext } from '/authContext';
+import PropTypes from 'prop-types';
 
 const ResumeUpload = () => {
   const { user } = useContext(AuthContext);
   const [resumeText, setResumeText] = useState('');
   const [parsing, setParsing] = useState(false);
+  const [parsedData, setParsedData] = useState([]);
 
-  const handleParseResume = async () => {
+  if (!user) {
+    return <p>Please log in to upload a resume.</p>;
+  }
+
+  const handleParseResume = () => {
     setParsing(true);
 
-    // Placeholder for parsing logic
-    // Implement a parser or use a library to extract data
+    // Regex to extract job titles and companies from resume text (placeholder example)
+    const jobEntries = [...resumeText.matchAll(/(?:Job Title|Position):\s*(.*)(?:\n|$)/gi)];
+    const companyEntries = [...resumeText.matchAll(/(?:Company):\s*(.*)(?:\n|$)/gi)];
 
-    // Example: Extract job titles using a simple regex (for demonstration purposes)
-    const jobTitles = resumeText.match(/(?:Job Title|Position):\s*(.*)/gi);
+    const parsedJobs = jobEntries.map((entry, index) => ({
+      title: entry[1].trim(),
+      company: companyEntries[index] ? companyEntries[index][1].trim() : 'Unknown Company'
+    }));
 
-    // Process extracted data and insert into Supabase
-    // ...
-
+    setParsedData(parsedJobs);
     setParsing(false);
   };
 
@@ -38,8 +44,28 @@ const ResumeUpload = () => {
       >
         {parsing ? 'Parsing...' : 'Parse Resume'}
       </button>
+
+      {parsedData.length > 0 && (
+        <div className="mt-6">
+          <h2 className="text-2xl mb-4">Parsed Data</h2>
+          <ul className="list-disc list-inside">
+            {parsedData.map((job, index) => (
+              <li key={index}>
+                <strong>Job Title:</strong> {job.title} <br />
+                <strong>Company:</strong> {job.company}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
+};
+
+ResumeUpload.propTypes = {
+  resumeText: PropTypes.string,
+  setResumeText: PropTypes.func,
+  user: PropTypes.object
 };
 
 export default ResumeUpload;

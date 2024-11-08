@@ -1,4 +1,4 @@
-import  { useState, useEffect } from 'react';
+import  { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../supabaseClient';
 import ExperienceItem from './ExperienceItem';
 import { Button, Input } from '@nextui-org/react';
@@ -8,11 +8,7 @@ const Experiences = ({ job }) => {
   const [experiences, setExperiences] = useState([]);
   const [newExperience, setNewExperience] = useState('');
 
-  useEffect(() => {
-    fetchExperiences();
-  }, [job]);
-
-  const fetchExperiences = async () => {
+  const fetchExperiences = useCallback(async () => {
     const { data, error } = await supabase
       .from('res_experiences')
       .select('*')
@@ -23,7 +19,10 @@ const Experiences = ({ job }) => {
     } else {
       setExperiences(data);
     }
-  };
+  }, [job]);
+  useEffect(() => {
+    fetchExperiences();
+  }, [fetchExperiences]);
 
   const handleAddExperience = async () => {
     const { data, error } = await supabase

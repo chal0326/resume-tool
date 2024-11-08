@@ -1,7 +1,6 @@
-import { createContext, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
-
-export const AuthContext = createContext();
+import { AuthContext } from './AuthContext';
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -20,6 +19,11 @@ const AuthProvider = ({ children }) => {
   }, []);
 
   return <AuthContext.Provider value={{ user }}>{children}</AuthContext.Provider>;
+};
+AuthContext.propTypes = {
+  children: PropTypes.arrayOf(
+   
+  ).
 };
 
 export default AuthProvider;
