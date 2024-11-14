@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Modal, Input, Button } from '@nextui-org/react';
+import { Modal, Input, Button, Textarea } from '@nextui-org/react';
 
 const AddJobModal = ({ show, onClose, onAddJob }) => {
   const initialState = {
@@ -8,7 +8,11 @@ const AddJobModal = ({ show, onClose, onAddJob }) => {
     company: '',
     start_date: '',
     end_date: '',
-    current_job: false
+    current_job: false,
+    description: '',
+    achievements: '',
+    awards: '',
+    certifications: ''
   };
 
   const [jobData, setJobData] = useState(initialState);
@@ -20,7 +24,10 @@ const AddJobModal = ({ show, onClose, onAddJob }) => {
     try {
       await onAddJob({
         ...jobData,
-        end_date: jobData.current_job ? null : jobData.end_date
+        end_date: jobData.current_job ? null : jobData.end_date,
+        achievements: jobData.achievements ? jobData.achievements.split(',') : [],
+        awards: jobData.awards ? jobData.awards.split(',') : [],
+        certifications: jobData.certifications ? jobData.certifications.split(',') : []
       });
       setJobData(initialState);
       onClose();
@@ -100,6 +107,45 @@ const AddJobModal = ({ show, onClose, onAddJob }) => {
               fullWidth
             />
           )}
+
+          <Textarea
+            label="Description"
+            name="description"
+            value={jobData.description}
+            onChange={handleChange}
+            minRows={3}
+            fullWidth
+          />
+
+          <Textarea
+            label="Achievements (comma-separated)"
+            name="achievements"
+            placeholder="e.g., Exceeded sales goals, Managed a team of 10"
+            value={jobData.achievements}
+            onChange={handleChange}
+            minRows={2}
+            fullWidth
+          />
+
+          <Textarea
+            label="Awards (comma-separated)"
+            name="awards"
+            placeholder="e.g., Employee of the Month, Top Performer"
+            value={jobData.awards}
+            onChange={handleChange}
+            minRows={2}
+            fullWidth
+          />
+
+          <Textarea
+            label="Certifications (comma-separated)"
+            name="certifications"
+            placeholder="e.g., PMP, Six Sigma"
+            value={jobData.certifications}
+            onChange={handleChange}
+            minRows={2}
+            fullWidth
+          />
         </form>
       </Modal.Body>
 

@@ -20,7 +20,8 @@ const Login = () => {
       await signIn(email, password);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.message);
+      console.error(err);
+      setError('Login failed. Please check your email and password and try again.');
     } finally {
       setIsLoading(false);
     }
@@ -53,6 +54,7 @@ const Login = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              aria-label="Email"
               className="bg-opacity-20 bg-darkGreen placeholder:text-greyGreen text-olive"
             />
           </div>
@@ -64,6 +66,7 @@ const Login = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              aria-label="Password"
               className="bg-opacity-20 bg-darkGreen placeholder:text-greyGreen text-olive"
             />
           </div>
@@ -76,10 +79,8 @@ const Login = () => {
             {isLoading ? 'Logging in...' : 'Login'}
           </Button>
 
-          <p className="text-center text-greyGreen mt-4">
-            Don't have an account?{' '}
-            <Link to="/register" className="text-yellow hover:underline">
-              Register here
+          <p className="text-center text-greyGreen mt-4">Dont have an account?{' '}
+            <Link to="/register" className="text-yellow hover:underline">Register here
             </Link>
           </p>
         </form>

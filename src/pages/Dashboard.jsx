@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@nextui-org/react';
 import { AuthContext } from '../contexts/AuthContext';
 
+
 const Dashboard = () => {
   const { user } = useContext(AuthContext);
 

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { Button, Textarea } from '@nextui-org/react';
+import { parseResumeWithOpenAI } from '../lib/openai';
 
 const ResumeUpload = () => {
   const { user } = useAuth();
@@ -10,54 +11,83 @@ const ResumeUpload = () => {
   const [parsedData, setParsedData] = useState([]);
   const [error, setError] = useState(null);
 
-  const parseResumeText = (text) => {
-    const jobEntries = text.match(/(?:Job Title|Position):\s*([^\n]+)/gi) || [];
-    const companyEntries = text.match(/(?:Company):\s*([^\n]+)/gi) || [];
-    const dateEntries = text.match(/(?:Date|Period):\s*([^\n]+)/gi) || [];
-
-    return jobEntries.map((job, index) => ({
-      title: job.replace(/(?:Job Title|Position):\s*/i, '').trim(),
-      company: companyEntries[index]
-        ? companyEntries[index].replace(/Company:\s*/i, '').trim()
-        : 'Unknown Company',
-      date: dateEntries[index]
-        ? dateEntries[index].replace(/(?:Date|Period):\s*/i, '').trim()
-        : ''
-    }));
-  };
 
   const handleParseResume = async () => {
     if (!resumeText.trim()) {
       setError('Please enter resume text');
       return;
     }
-
+  
     setParsing(true);
     setError(null);
-
+  
     try {
-      const parsedJobs = parseResumeText(resumeText);
-      setParsedData(parsedJobs);
-
-      // Save to database
-      for (const job of parsedJobs) {
-        const { error: insertError } = await supabase
+      // Parse the resume using OpenAI
+      const parsedData = await parseResumeWithOpenAI(resumeText);
+  
+      // Extract each category of data
+      const { jobs, achievements, awards, certifications } = parsedData;
+  
+      // Insert jobs into `res_jobs` table
+      for (const job of jobs) {
+        const { error: jobError } = await supabase
           .from('res_jobs')
           .insert([{
             user_id: user.id,
             job_title: job.title,
             company: job.company,
-            start_date: new Date().toISOString() // You might want to parse dates from the text
+            start_date: job.startDate,
+            end_date: job.endDate,
+            description: job.description
           }]);
-
-        if (insertError) throw insertError;
+  
+        if (jobError) throw jobError;
       }
+  
+      // Insert achievements into `res_achievements` table
+      for (const achievement of achievements) {
+        const { error: achievementError } = await supabase
+          .from('res_achievements')
+          .insert([{
+            user_id: user.id,
+            achievement: achievement
+          }]);
+  
+        if (achievementError) throw achievementError;
+      }
+  
+      // Insert awards into `res_awards` table
+      for (const award of awards) {
+        const { error: awardError } = await supabase
+          .from('res_awards')
+          .insert([{
+            user_id: user.id,
+            award: award
+          }]);
+  
+        if (awardError) throw awardError;
+      }
+  
+      // Insert certifications into `res_certifications` table
+      for (const certification of certifications) {
+        const { error: certError } = await supabase
+          .from('res_certifications')
+          .insert([{
+            user_id: user.id,
+            certification: certification
+          }]);
+  
+        if (certError) throw certError;
+      }
+  
+      setParsedData(parsedData); // Display parsed data if needed
     } catch (err) {
       setError(err.message);
     } finally {
       setParsing(false);
     }
   };
+  
 
   return (
     <div className="min-h-screen p-8 bg-gradient-to-br from-gray-800 to-gray-900">

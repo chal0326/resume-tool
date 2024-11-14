@@ -4,12 +4,33 @@ import { supabase } from '../lib/supabase';
 import { Button, Input } from '@nextui-org/react';
 import { motion } from 'framer-motion';
 
-const ExperienceItem = ({ experience, onDelete, onUpdate }) => {
+/*************  ✨ Codeium Command ⭐  *************/
+  /**
+   * Component for displaying and editing an experience
+   * 
+   * @param {object} experience - The experience to display
+   * @param {function} onDelete - Function to call when experience is deleted
+   * @param {function} onUpdate - Function to call when experience is updated
+   * 
+   * @returns {ReactElement}
+   */
+/******  762ca273-99d2-4802-8c8a-0374180da8dd  *******/const ExperienceItem = ({ experience, onDelete, onUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState(experience.experience_text);
   const [skills, setSkills] = useState(experience.skills || []);
+  const [achievements, setAchievements] = useState(experience.achievements || []);
+  const [awards, setAwards] = useState(experience.awards || []);
+  const [certifications, setCertifications] = useState(experience.certifications || []);
+
   const [newSkill, setNewSkill] = useState('');
+  const [newAchievement, setNewAchievement] = useState('');
+  const [newAward, setNewAward] = useState('');
+  const [newCertification, setNewCertification] = useState('');
+  
   const [showSkillInput, setShowSkillInput] = useState(false);
+  const [showAchievementInput, setShowAchievementInput] = useState(false);
+  const [showAwardInput, setShowAwardInput] = useState(false);
+  const [showCertificationInput, setShowCertificationInput] = useState(false);
 
   const handleUpdate = async () => {
     try {
@@ -26,33 +47,31 @@ const ExperienceItem = ({ experience, onDelete, onUpdate }) => {
     }
   };
 
-  const handleAddSkill = async () => {
+  const handleAddItem = async (type, value, stateSetter, tableName, fieldName) => {
     try {
       const { data, error } = await supabase
-        .from('res_transferable_skills')
-        .insert([{ experience_id: experience.id, skill_name: newSkill }])
+        .from(tableName)
+        .insert([{ experience_id: experience.id, [fieldName]: value }])
         .single();
 
       if (error) throw error;
-      setSkills([...skills, data]);
-      setNewSkill('');
-      setShowSkillInput(false);
+      stateSetter(prev => [...prev, data]);
     } catch (err) {
-      console.error('Error adding skill:', err.message);
+      console.error(`Error adding ${type}:`, err.message);
     }
   };
 
-  const handleDeleteSkill = async (skillId) => {
+  const handleDeleteItem = async (type, itemId, stateSetter, tableName) => {
     try {
       const { error } = await supabase
-        .from('res_transferable_skills')
+        .from(tableName)
         .delete()
-        .eq('id', skillId);
+        .eq('id', itemId);
 
       if (error) throw error;
-      setSkills(skills.filter(skill => skill.id !== skillId));
+      stateSetter(prev => prev.filter(item => item.id !== itemId));
     } catch (err) {
-      console.error('Error deleting skill:', err.message);
+      console.error(`Error deleting ${type}:`, err.message);
     }
   };
 
@@ -86,40 +105,48 @@ const ExperienceItem = ({ experience, onDelete, onUpdate }) => {
         </div>
       )}
 
-      <div className="mb-4">
-        <h3 className="text-xl mb-2">Skills</h3>
-        <div className="flex flex-wrap gap-2">
-          {skills.map((skill) => (
-            <span 
-              key={skill.id}
-              className="bg-blue-500 px-2 py-1 rounded flex items-center gap-2"
-            >
-              {skill.skill_name}
-              <button
-                onClick={() => handleDeleteSkill(skill.id)}
-                className="text-xs hover:text-red-300"
+      {/* Reusable component for each section */}
+      {[
+        { title: 'Skills', items: skills, newItem: newSkill, setNewItem: setNewSkill, stateSetter: setSkills, tableName: 'res_transferable_skills', fieldName: 'skill_name', showInput: showSkillInput, setShowInput: setShowSkillInput },
+        { title: 'Achievements', items: achievements, newItem: newAchievement, setNewItem: setNewAchievement, stateSetter: setAchievements, tableName: 'res_achievements', fieldName: 'achievement', showInput: showAchievementInput, setShowInput: setShowAchievementInput },
+        { title: 'Awards', items: awards, newItem: newAward, setNewItem: setNewAward, stateSetter: setAwards, tableName: 'res_awards', fieldName: 'award', showInput: showAwardInput, setShowInput: setShowAwardInput },
+        { title: 'Certifications', items: certifications, newItem: newCertification, setNewItem: setNewCertification, stateSetter: setCertifications, tableName: 'res_certifications', fieldName: 'certification', showInput: showCertificationInput, setShowInput: setShowCertificationInput }
+      ].map(({ title, items, newItem, setNewItem, stateSetter, tableName, fieldName, showInput, setShowInput }) => (
+        <div className="mb-4" key={title}>
+          <h3 className="text-xl mb-2">{title}</h3>
+          <div className="flex flex-wrap gap-2">
+            {items.map((item) => (
+              <span 
+                key={item.id}
+                className="bg-blue-500 px-2 py-1 rounded flex items-center gap-2"
               >
-                ×
-              </button>
-            </span>
-          ))}
-        </div>
-      </div>
+                {item[fieldName]}
+                <button
+                  onClick={() => handleDeleteItem(title.toLowerCase(), item.id, stateSetter, tableName)}
+                  className="text-xs hover:text-red-300"
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
 
-      {showSkillInput ? (
-        <div className="flex items-center space-x-2">
-          <Input
-            placeholder="Add a skill"
-            value={newSkill}
-            onChange={(e) => setNewSkill(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleAddSkill()}
-          />
-          <Button auto onClick={handleAddSkill}>Add</Button>
-          <Button auto flat onClick={() => setShowSkillInput(false)}>Cancel</Button>
+          {showInput ? (
+            <div className="flex items-center space-x-2">
+              <Input
+                placeholder={`Add a ${title.toLowerCase().slice(0, -1)}`}
+                value={newItem}
+                onChange={(e) => setNewItem(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleAddItem(title.toLowerCase(), newItem, stateSetter, tableName, fieldName)}
+              />
+              <Button auto onClick={() => handleAddItem(title.toLowerCase(), newItem, stateSetter, tableName, fieldName)}>Add</Button>
+              <Button auto flat onClick={() => setShowInput(false)}>Cancel</Button>
+            </div>
+          ) : (
+            <Button auto onClick={() => setShowInput(true)}>Add {title.slice(0, -1)}</Button>
+          )}
         </div>
-      ) : (
-        <Button auto onClick={() => setShowSkillInput(true)}>Add Skill</Button>
-      )}
+      ))}
     </motion.div>
   );
 };
@@ -131,6 +158,18 @@ ExperienceItem.propTypes = {
     skills: PropTypes.arrayOf(PropTypes.shape({
       id: PropTypes.string.isRequired,
       skill_name: PropTypes.string.isRequired
+    })),
+    achievements: PropTypes.arrayOf(PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      achievement: PropTypes.string.isRequired
+    })),
+    awards: PropTypes.arrayOf(PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      award: PropTypes.string.isRequired
+    })),
+    certifications: PropTypes.arrayOf(PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      certification: PropTypes.string.isRequired
     }))
   }).isRequired,
   onDelete: PropTypes.func.isRequired,

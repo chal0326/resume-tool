@@ -11,27 +11,30 @@ const Experiences = ({ job }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const fetchExperiences = async () => {
+      try {
+        const { data, error: fetchError } = await supabase
+          .from('res_experiences')
+          .select(`
+            *,
+            skills:res_transferable_skills(*),
+            achievements:res_achievements(*),
+            awards:res_awards(*),
+            certifications:res_certifications(*)
+          `)
+          .eq('job_id', job.id);
+
+        if (fetchError) throw fetchError;
+        setExperiences(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchExperiences();
-  }, [job.id]);
-
-  const fetchExperiences = async () => {
-    try {
-      const { data, error: fetchError } = await supabase
-        .from('res_experiences')
-        .select(`
-          *,
-          skills:res_transferable_skills(*)
-        `)
-        .eq('job_id', job.id);
-
-      if (fetchError) throw fetchError;
-      setExperiences(data);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [job.id]); // Only dependent on job.id
 
   const handleAddExperience = async () => {
     if (!newExperience.trim()) return;
@@ -43,7 +46,7 @@ const Experiences = ({ job }) => {
         .single();
 
       if (insertError) throw insertError;
-      setExperiences([...experiences, { ...data, skills: [] }]);
+      setExperiences([...experiences, { ...data, skills: [], achievements: [], awards: [], certifications: [] }]);
       setNewExperience('');
     } catch (err) {
       setError(err.message);

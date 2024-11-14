@@ -18,8 +18,8 @@ const JobSelection = ({ jobs, selectedJob, setSelectedJob, setShowJobModal }) =>
             onClick={() => setSelectedJob(job)}
             className={`p-4 rounded-lg text-left transition-all ${
               selectedJob?.id === job.id
-                ? 'bg-blue-600 shadow-lg'
-                : 'bg-gray-700 hover:bg-gray-600'
+                ? 'bg-blue-600 shadow-lg ring-2 ring-blue-300'
+                : 'bg-gray-700 hover:bg-gray-600 focus:ring-2 focus:ring-gray-500'
             }`}
           >
             <h3 className="font-semibold text-lg">{job.job_title}</h3>
