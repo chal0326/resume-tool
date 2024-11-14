@@ -1,5 +1,5 @@
 import  { useContext } from 'react';
-import { supabase } from '../supabaseClient';
+import { supabase } from '../lib/supabase';
 import { Link } from 'react-router-dom';
 import { Button } from '@nextui-org/react';
 import { AuthContext } from '../contexts/AuthContext';

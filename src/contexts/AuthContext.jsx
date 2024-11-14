@@ -1,9 +1,16 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { supabase } from '../lib/supabase';
 
-// Create AuthContext
 const AuthContext = createContext(undefined);
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+}
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -11,56 +18,49 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Initial check for active session
-    const session = supabase.auth.session();
-    setUser(session?.user ?? null);
-    setLoading(false);
-
-    // Subscribe to changes in auth state
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       setLoading(false);
     });
 
-    return () => {
-      listener?.subscription.unsubscribe();
-    };
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  // Authentication functions
   const signIn = async (email, password) => {
-    setError(null); // Clear any previous error
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
     } catch (err) {
       setError(err.message);
+      throw err;
     }
   };
 
   const signUp = async (email, password) => {
-    setError(null); // Clear any previous error
     try {
       const { error } = await supabase.auth.signUp({ email, password });
       if (error) throw error;
     } catch (err) {
       setError(err.message);
+      throw err;
     }
   };
 
   const signOut = async () => {
-    setError(null); // Clear any previous error
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
     } catch (err) {
       setError(err.message);
+      throw err;
     }
   };
 
-  const clearError = () => setError(null);
-
-  // Context value containing everything we need
   const value = {
     user,
     loading,
@@ -68,7 +68,6 @@ export function AuthProvider({ children }) {
     signIn,
     signUp,
     signOut,
-    clearError,
   };
 
   return (
@@ -82,5 +81,4 @@ AuthProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-// Export both AuthContext and AuthProvider
 export { AuthContext };

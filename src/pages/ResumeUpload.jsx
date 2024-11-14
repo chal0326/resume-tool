@@ -1,67 +1,111 @@
-import { useState, useContext } from 'react';
-import { AuthContext } from '../contexts/AuthContext';
-import PropTypes from 'prop-types';
+import { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabase';
+import { Button, Textarea } from '@nextui-org/react';
 
 const ResumeUpload = () => {
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
   const [resumeText, setResumeText] = useState('');
   const [parsing, setParsing] = useState(false);
+  const [parsedData, setParsedData] = useState([]);
+  const [error, setError] = useState(null);
 
-  const handleParseResume = () => {
-    if (!user) {
-      alert('You must be logged in to parse your resume.');
+  const parseResumeText = (text) => {
+    const jobEntries = text.match(/(?:Job Title|Position):\s*([^\n]+)/gi) || [];
+    const companyEntries = text.match(/(?:Company):\s*([^\n]+)/gi) || [];
+    const dateEntries = text.match(/(?:Date|Period):\s*([^\n]+)/gi) || [];
+
+    return jobEntries.map((job, index) => ({
+      title: job.replace(/(?:Job Title|Position):\s*/i, '').trim(),
+      company: companyEntries[index]
+        ? companyEntries[index].replace(/Company:\s*/i, '').trim()
+        : 'Unknown Company',
+      date: dateEntries[index]
+        ? dateEntries[index].replace(/(?:Date|Period):\s*/i, '').trim()
+        : ''
+    }));
+  };
+
+  const handleParseResume = async () => {
+    if (!resumeText.trim()) {
+      setError('Please enter resume text');
       return;
     }
 
     setParsing(true);
+    setError(null);
 
-    // Regex to extract job titles and companies from resume text (placeholder example)
-    const jobEntries = [...resumeText.matchAll(/(?:Job Title|Position):\s*(.*)(?:\n|$)/gi)];
-    const companyEntries = [...resumeText.matchAll(/(?:Company):\s*(.*)(?:\n|$)/gi)];
+    try {
+      const parsedJobs = parseResumeText(resumeText);
+      setParsedData(parsedJobs);
 
-    const parsedJobs = jobEntries.map((entry, index) => ({
-      title: entry[1].trim(),
-      company: companyEntries[index] ? companyEntries[index][1].trim() : 'Unknown Company'
-    }));
+      // Save to database
+      for (const job of parsedJobs) {
+        const { error: insertError } = await supabase
+          .from('res_jobs')
+          .insert([{
+            user_id: user.id,
+            job_title: job.title,
+            company: job.company,
+            start_date: new Date().toISOString() // You might want to parse dates from the text
+          }]);
 
-    console.log(parsedJobs); // Optional: For debugging
-
-    setParsing(false);
+        if (insertError) throw insertError;
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setParsing(false);
+    }
   };
 
   return (
-    <div className="min-h-screen p-8 bg-gradient-to-br from-gray-800 to-gray-900 text-white">
-      {user ? (
-        <>
-          <h1 className="text-3xl mb-6">Upload Your Resume</h1>
-          <textarea
-            className="w-full h-64 p-4 bg-gray-700 rounded mb-4"
+    <div className="min-h-screen p-8 bg-gradient-to-br from-gray-800 to-gray-900">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-3xl font-bold text-white mb-6">Upload Resume</h1>
+
+        <div className="bg-gray-700 rounded-lg p-6 mb-6">
+          <Textarea
             placeholder="Paste your resume text here..."
             value={resumeText}
             onChange={(e) => setResumeText(e.target.value)}
-          ></textarea>
-          <button
+            minRows={10}
+            fullWidth
+            className="mb-4"
+          />
+
+          <Button
+            color="primary"
             onClick={handleParseResume}
-            className="bg-green-500 p-2 rounded hover:bg-green-600 transition"
-            disabled={parsing}
+            disabled={parsing || !resumeText.trim()}
           >
             {parsing ? 'Parsing...' : 'Parse Resume'}
-          </button>
-        </>
-      ) : (
-        <div>
-          <h1 className="text-3xl mb-6">Please Log In</h1>
-          <p>You must be logged in to upload and parse your resume.</p>
+          </Button>
         </div>
-      )}
+
+        {error && (
+          <div className="bg-red-500 text-white p-4 rounded-lg mb-6">
+            {error}
+          </div>
+        )}
+
+        {parsedData.length > 0 && (
+          <div className="bg-gray-700 rounded-lg p-6">
+            <h2 className="text-2xl font-semibold text-white mb-4">Parsed Data</h2>
+            <div className="space-y-4">
+              {parsedData.map((job, index) => (
+                <div key={index} className="bg-gray-600 p-4 rounded-lg">
+                  <h3 className="font-semibold text-white">{job.title}</h3>
+                  <p className="text-gray-300">{job.company}</p>
+                  {job.date && <p className="text-gray-400 text-sm">{job.date}</p>}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
-};
-
-ResumeUpload.propTypes = {
-  resumeText: PropTypes.string,
-  setResumeText: PropTypes.func,
-  user: PropTypes.object
 };
 
 export default ResumeUpload;
