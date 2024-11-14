@@ -1,5 +1,5 @@
 import { useState, useContext } from 'react';
-import { AuthContext } from '/src/AuthContext.js';
+import { AuthContext } from '../contexts/AuthContext';
 import PropTypes from 'prop-types';
 
 const ResumeUpload = () => {

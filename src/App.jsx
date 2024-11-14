@@ -1,12 +1,12 @@
-//import React from 'react';
+//      import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Login from './Login';
-import Register from './Register';
-import Dashboard from './Dashboard';
+import Login from './components/Login';
+import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
 import WorkHistory from './components/WorkHistory';
 import ProtectedRoute from './protectedRoute';
-import ResumeUpload from './components/ResumeUpload';
-import AuthProvider from './AuthContext';
+import ResumeUpload from './pages/ResumeUpload';
+import AuthProvider from './contexts/AuthContext';
 
 const App = () => {
   return (

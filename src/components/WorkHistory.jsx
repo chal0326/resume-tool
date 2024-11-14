@@ -1,5 +1,5 @@
 import { useState, useContext } from 'react';
-import { AuthContext } from '/src/AuthContext.js';
+import { AuthContext } from '/src/contexts/AuthContext';
 import PropTypes from 'prop-types';
 
 /**

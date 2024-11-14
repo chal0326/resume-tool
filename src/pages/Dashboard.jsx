@@ -1,7 +1,8 @@
 import  { useContext } from 'react';
-import { supabase } from './supabaseClient';
-import { AuthContext } from './AuthContext';
+import { supabase } from '../supabaseClient';
 import { Link } from 'react-router-dom';
+import { Button } from '@nextui-org/react';
+import { AuthContext } from '../contexts/AuthContext';
 
 const Dashboard = () => {
   const { user } = useContext(AuthContext);
@@ -29,13 +30,12 @@ const Dashboard = () => {
 >
   Upload Resume
 </Link>
-
-        <button
+        <Button
           onClick={handleLogout}
           className="bg-red-500 p-2 rounded hover:bg-red-600 transition"
         >
           Logout
-        </button>
+        </Button>
       </div>
     </div>
   );
