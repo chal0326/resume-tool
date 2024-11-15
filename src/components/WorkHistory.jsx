@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
-import JobSelection from './JobSelection';
-import AddJobModal from './AddJobModal';
-import Experiences from './Experiences';
+import JobSelection from './jobs/JobSelection';
+import AddJobModal from './jobs/AddJobModal';
+import ParsedResumeView from './resume/ParsedResumeView';
 
 const WorkHistory = () => {
   const { user } = useAuth();
@@ -13,16 +13,13 @@ const WorkHistory = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchJobs();
-  }, []);
-
-  const fetchJobs = async () => {
+  const fetchJobs = useCallback(async () => {
     try {
       const { data, error: fetchError } = await supabase
         .from('res_jobs')
         .select('*')
         .eq('user_id', user.id)
+        .order('end_date', { ascending: false, nullsFirst: true })
         .order('start_date', { ascending: false });
 
       if (fetchError) throw fetchError;
@@ -32,17 +29,33 @@ const WorkHistory = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user.id]);
+
+  useEffect(() => {
+    fetchJobs();
+  }, [fetchJobs]);
 
   const handleAddJob = async (jobData) => {
     try {
+      const dataToSave = {
+        ...jobData,
+        user_id: user.id,
+        end_date: jobData.end_date === 'Present' ? null : jobData.end_date,
+        is_current: jobData.is_current
+      };
+
       const { data, error: insertError } = await supabase
         .from('res_jobs')
-        .insert([{ ...jobData, user_id: user.id }])
+        .insert([dataToSave])
         .single();
 
       if (insertError) throw insertError;
-      setJobs([...jobs, data]);
+      const transformedJob = {
+        ...data,
+        end_date: data.end_date === null ? 'Present' : data.end_date,
+        is_current: data.is_current
+      };
+      setJobs([...jobs, transformedJob]);
       setShowJobModal(false);
     } catch (err) {
       setError(err.message);
@@ -69,7 +82,11 @@ const WorkHistory = () => {
         onAddJob={handleAddJob}
       />
 
-      {selectedJob && <Experiences job={selectedJob} />}
+      <div className="mt-8">
+        {jobs.map(job => (
+          <ParsedResumeView key={job.id} job={job} />
+        ))}
+      </div>
     </div>
   );
 };

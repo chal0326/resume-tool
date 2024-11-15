@@ -8,7 +8,7 @@ const AddJobModal = ({ show, onClose, onAddJob }) => {
     company: '',
     start_date: '',
     end_date: '',
-    current_job: false,
+    is_current: false,
     experience: '',
     achievements: '',
     awards: '',
@@ -24,7 +24,9 @@ const AddJobModal = ({ show, onClose, onAddJob }) => {
     try {
       await onAddJob({
         ...jobData,
-        end_date: jobData.current_job ? null : jobData.end_date,
+        start_date: jobData.start_date.substring(0, 7),
+        end_date: jobData.is_current ? null : 
+          jobData.end_date ? jobData.end_date.substring(0, 7) : null,
         achievements: jobData.achievements ? jobData.achievements.split(',') : [],
         awards: jobData.awards ? jobData.awards.split(',') : [],
         certifications: jobData.certifications ? jobData.certifications.split(',') : []
@@ -79,7 +81,7 @@ const AddJobModal = ({ show, onClose, onAddJob }) => {
           <Input
             label="Start Date"
             name="start_date"
-            type="date"
+            type="text"
             value={jobData.start_date}
             onChange={handleChange}
             required
@@ -101,7 +103,7 @@ const AddJobModal = ({ show, onClose, onAddJob }) => {
             <Input
               label="End Date"
               name="end_date"
-              type="date"
+              type="text"
               value={jobData.end_date}
               onChange={handleChange}
               fullWidth

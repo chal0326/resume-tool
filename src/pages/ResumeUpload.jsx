@@ -3,9 +3,12 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { Button, Textarea } from '@nextui-org/react';
 import { parseResumeWithOpenAI } from '../lib/parseResume';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 
 const ResumeUpload = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [resumeText, setResumeText] = useState('');
   const [parsing, setParsing] = useState(false);
   const [parsedData, setParsedData] = useState({
@@ -43,7 +46,8 @@ const ResumeUpload = () => {
             job_title: job.title,      // Ensure OpenAI returns 'title'
             company: job.company,       // Ensure OpenAI returns 'company'
             start_date: job.startDate,  // Ensure OpenAI returns 'startDate'
-            end_date: job.endDate      // Ensure OpenAI returns 'endDate'
+            end_date: job.endDate,
+            is_current: job.isCurrent    // Ensure OpenAI returns 'endDate'
           }])
           .select();
   
@@ -82,8 +86,8 @@ const ResumeUpload = () => {
           .from('res_achievements')
           .insert([{
             user_id: user.id,
-            achievement_name: achievement.name,  // Ensure OpenAI returns 'name'
-            date_received: achievement.date,     // Ensure OpenAI returns 'date'
+            achievement_name: achievement.name,
+            date_received: achievement.date,     
             description: achievement.description
           }]);
   
@@ -96,8 +100,8 @@ const ResumeUpload = () => {
           .from('res_awards')
           .insert([{
             user_id: user.id,
-            award_name: award.name,           // Ensure OpenAI returns 'name'
-            date_received: award.date,        // Ensure OpenAI returns 'date'
+            award_name: award.name,
+            date_received: award.date,        
             description: award.description
           }]);
   
@@ -110,10 +114,10 @@ const ResumeUpload = () => {
           .from('res_certifications')
           .insert([{
             user_id: user.id,
-            certification_name: certification.name,           // Ensure OpenAI returns 'name'
-            date_received: certification.date,                // Ensure OpenAI returns 'date'
+            certification_name: certification.name,
+            date_received: certification.date,    // Already in YYYY-MM format from OpenAI
             description: certification.description,
-            issuing_organization: certification.organization  // Ensure OpenAI returns 'organization'
+            issuing_organization: certification.organization
           }]);
   
         if (certError) throw certError;
@@ -127,8 +131,15 @@ const ResumeUpload = () => {
         certifications,
         transferrable_skills
       });
+  
+      // Show success message and redirect
+      toast.success('Resume uploaded successfully! Redirecting to dashboard...');
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 2000);
     } catch (err) {
       setError(err.message);
+      toast.error('Error processing resume');
     } finally {
       setParsing(false);
     }

@@ -25,10 +25,7 @@ const JobSelection = ({ jobs, selectedJob, setSelectedJob, setShowJobModal }) =>
             <h3 className="font-semibold text-lg">{job.job_title}</h3>
             <p className="text-gray-300">{job.company}</p>
             <p className="text-sm text-gray-400">
-              {new Date(job.start_date).toLocaleDateString()} - 
-              {job.end_date 
-                ? new Date(job.end_date).toLocaleDateString()
-                : 'Present'}
+              {job.start_date} - {job.end_date || 'Present'}
             </p>
           </button>
         ))}
@@ -44,7 +41,8 @@ JobSelection.propTypes = {
       job_title: PropTypes.string.isRequired,
       company: PropTypes.string.isRequired,
       start_date: PropTypes.string.isRequired,
-      end_date: PropTypes.string
+      end_date: PropTypes.string,
+      is_current: PropTypes.bool
     })
   ).isRequired,
   selectedJob: PropTypes.shape({
