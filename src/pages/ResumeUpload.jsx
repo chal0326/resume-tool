@@ -1,3 +1,4 @@
+import { scan } from 'react-scan';
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
@@ -5,6 +6,12 @@ import { Button, Textarea } from '@nextui-org/react';
 import { parseResumeWithOpenAI } from '../lib/parseResume';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+
+scan({
+  enabled: true,
+  log: true,
+  clearlLog: false,
+});
 
 const ResumeUpload = () => {
   const { user } = useAuth();

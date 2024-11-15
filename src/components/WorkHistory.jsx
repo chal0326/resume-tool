@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import JobSelection from './jobs/JobSelection';
 import AddJobModal from './jobs/AddJobModal';
 import ParsedResumeView from './resume/ParsedResumeView';
+import SkillCloud from './skills/SkillCloud';
 
 const WorkHistory = () => {
   const { user } = useAuth();
@@ -66,26 +67,30 @@ const WorkHistory = () => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="min-h-screen p-8 bg-gradient-to-br from-gray-800 to-gray-900 text-white">
-      <h1 className="text-3xl mb-6">Work History</h1>
-      
-      <JobSelection 
-        jobs={jobs}
-        selectedJob={selectedJob}
-        setSelectedJob={setSelectedJob}
-        setShowJobModal={setShowJobModal}
-      />
+    <div className="min-h-screen p-8 bg-gradient-to-br from-gray-800 to-gray-900">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-3xl font-bold text-white mb-6">Work History</h1>
+        
+        <SkillCloud userId={user.id} />
 
-      <AddJobModal
-        show={showJobModal}
-        onClose={() => setShowJobModal(false)}
-        onAddJob={handleAddJob}
-      />
+        <JobSelection 
+          jobs={jobs}
+          selectedJob={selectedJob}
+          setSelectedJob={setSelectedJob}
+          setShowJobModal={setShowJobModal}
+        />
 
-      <div className="mt-8">
-        {jobs.map(job => (
-          <ParsedResumeView key={job.id} job={job} />
-        ))}
+        <AddJobModal
+          show={showJobModal}
+          onClose={() => setShowJobModal(false)}
+          onAddJob={handleAddJob}
+        />
+
+        <div className="mt-8">
+          {jobs.map(job => (
+            <ParsedResumeView key={job.id} job={job} />
+          ))}
+        </div>
       </div>
     </div>
   );
