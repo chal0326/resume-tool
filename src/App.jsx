@@ -6,6 +6,7 @@ import WorkHistory from './components/WorkHistory';
 import ProtectedRoute from './protectedRoute';
 import ResumeUpload from './pages/ResumeUpload';
 import { AuthProvider } from './contexts/AuthContext';
+import MainLayout from './components/layout/MainLayout';
 
 const App = () => {
   return (

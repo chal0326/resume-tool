@@ -91,12 +91,12 @@ const AddJobModal = ({ show, onClose, onAddJob }) => {
           <div className="flex items-center mb-4">
             <input
               type="checkbox"
-              name="current_job"
-              checked={jobData.current_job}
+              name="is_current"
+              checked={jobData.is_current}
               onChange={handleChange}
               className="mr-2"
             />
-            <label>Current Job</label>
+            <label>is_current</label>
           </div>
 
           {!jobData.current_job && (

@@ -6,12 +6,14 @@ const ParsedResumeView = ({ job }) => {
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-gray-800 rounded-lg p-6 mb-6"
+      className="glass-dark rounded-xl p-6 mb-6"
     >
       <div className="mb-4">
-        <h3 className="text-2xl font-bold text-white">{job.job_title}</h3>
-        <p className="text-gray-400">{job.company}</p>
-        <p className="text-gray-500">
+        <h3 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+          {job.job_title}
+        </h3>
+        <p className="text-blue-200">{job.company}</p>
+        <p className="text-gray-400">
           {job.start_date} - {job.is_current ? 'Present' : job.end_date}
         </p>
       </div>
@@ -22,13 +24,13 @@ const ParsedResumeView = ({ job }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: index * 0.1 }}
-          className="mb-4 bg-gray-700 rounded p-4"
+          className="mb-4 glass p-4 rounded-lg"
         >
           <p className="text-white mb-2">{exp.experience_text}</p>
           {exp.skills?.map((skill, skillIndex) => (
             <span 
               key={skillIndex}
-              className="inline-block bg-blue-500 text-white text-sm px-3 py-1 rounded-full mr-2 mt-2"
+              className="inline-block bg-gradient-to-r from-blue-500 to-purple-500 text-white text-sm px-3 py-1 rounded-full mr-2 mt-2"
             >
               {skill.skill_name}
             </span>
@@ -39,12 +41,14 @@ const ParsedResumeView = ({ job }) => {
       {/* Achievements Section */}
       {job.achievements?.length > 0 && (
         <div className="mt-6">
-          <h4 className="text-xl font-semibold text-white mb-3">Achievements</h4>
+          <h4 className="text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 mb-3">
+            Achievements
+          </h4>
           <div className="grid gap-3">
             {job.achievements.map((achievement, index) => (
-              <div key={index} className="bg-gray-700 p-3 rounded">
+              <div key={index} className="glass p-3 rounded-lg">
                 <p className="text-white">{achievement.achievement_name}</p>
-                <p className="text-gray-400 text-sm">{achievement.date_received}</p>
+                <p className="text-blue-200 text-sm">{achievement.date_received}</p>
               </div>
             ))}
           </div>
