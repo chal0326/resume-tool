@@ -11,7 +11,6 @@ const ResumeUpload = () => {
   const [parsedData, setParsedData] = useState([]);
   const [error, setError] = useState(null);
 
-
   const handleParseResume = async () => {
     if (!resumeText.trim()) {
       setError('Please enter resume text');
@@ -26,11 +25,11 @@ const ResumeUpload = () => {
       const parsedData = await parseResumeWithOpenAI(resumeText);
   
       // Extract each category of data
-      const { jobs, achievements, awards, certifications } = parsedData;
+      const { jobs, experiences, achievements, awards, certifications } = parsedData;
   
-      // Insert jobs into `res_jobs` table
+      // Insert jobs into `res_jobs` table and get job IDs for later use
       for (const job of jobs) {
-        const { error: jobError } = await supabase
+        const { data: jobData, error: jobError } = await supabase
           .from('res_jobs')
           .insert([{
             user_id: user.id,
@@ -38,19 +37,33 @@ const ResumeUpload = () => {
             company: job.company,
             start_date: job.startDate,
             end_date: job.endDate,
-            description: job.description
-          }]);
+          }])
+          .select(); // Select returns inserted data including job ID
   
         if (jobError) throw jobError;
+        const jobId = jobData[0].id; // Assuming single insertion
+
+        // Insert experiences into `res_experiences` table, linking to job ID
+        for (const experience of experiences) {
+          const { error: experienceError } = await supabase
+            .from('res_experiences')
+            .insert([{
+              job_id: jobId, // Link experience to the job ID
+              experience_text: experience.text
+            }]);
+          if (experienceError) throw experienceError;
+        }
       }
-  
+
       // Insert achievements into `res_achievements` table
       for (const achievement of achievements) {
         const { error: achievementError } = await supabase
           .from('res_achievements')
           .insert([{
             user_id: user.id,
-            achievement: achievement
+            achievement_name: achievement.name,
+            date_received: achievement.date,
+            description: achievement.description,
           }]);
   
         if (achievementError) throw achievementError;
@@ -62,7 +75,9 @@ const ResumeUpload = () => {
           .from('res_awards')
           .insert([{
             user_id: user.id,
-            award: award
+            award_name: award.name,
+            date_received: award.date,
+            description: award.description
           }]);
   
         if (awardError) throw awardError;
@@ -74,7 +89,10 @@ const ResumeUpload = () => {
           .from('res_certifications')
           .insert([{
             user_id: user.id,
-            certification: certification
+            certification_name: certification.name,
+            date_received: certification.date,
+            description: certification.description,
+            issuing_organization: certification.organization,
           }]);
   
         if (certError) throw certError;
@@ -87,7 +105,6 @@ const ResumeUpload = () => {
       setParsing(false);
     }
   };
-  
 
   return (
     <div className="min-h-screen p-8 bg-gradient-to-br from-gray-800 to-gray-900">
@@ -119,15 +136,18 @@ const ResumeUpload = () => {
           </div>
         )}
 
-        {parsedData.length > 0 && (
+        {parsedData.jobs && parsedData.jobs.length > 0 && (
           <div className="bg-gray-700 rounded-lg p-6">
             <h2 className="text-2xl font-semibold text-white mb-4">Parsed Data</h2>
             <div className="space-y-4">
-              {parsedData.map((job, index) => (
+              {parsedData.jobs.map((job, index) => (
                 <div key={index} className="bg-gray-600 p-4 rounded-lg">
                   <h3 className="font-semibold text-white">{job.title}</h3>
                   <p className="text-gray-300">{job.company}</p>
-                  {job.date && <p className="text-gray-400 text-sm">{job.date}</p>}
+                  {job.startDate && job.endDate && (
+                    <p className="text-gray-400 text-sm">{job.startDate} - {job.endDate}</p>
+                  )}
+                  <p className="text-gray-300">{job.description}</p>
                 </div>
               ))}
             </div>

@@ -9,7 +9,7 @@ const AddJobModal = ({ show, onClose, onAddJob }) => {
     start_date: '',
     end_date: '',
     current_job: false,
-    description: '',
+    experience: '',
     achievements: '',
     awards: '',
     certifications: ''
@@ -109,9 +109,9 @@ const AddJobModal = ({ show, onClose, onAddJob }) => {
           )}
 
           <Textarea
-            label="Description"
-            name="description"
-            value={jobData.description}
+            label="experience"
+            name="experience"
+            value={jobData.experience}
             onChange={handleChange}
             minRows={3}
             fullWidth
