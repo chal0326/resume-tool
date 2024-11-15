@@ -2,13 +2,20 @@ import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { Button, Textarea } from '@nextui-org/react';
-import { parseResumeWithOpenAI } from '../lib/openai';
+import { parseResumeWithOpenAI } from '../lib/parseResume';
 
 const ResumeUpload = () => {
   const { user } = useAuth();
   const [resumeText, setResumeText] = useState('');
   const [parsing, setParsing] = useState(false);
-  const [parsedData, setParsedData] = useState([]);
+  const [parsedData, setParsedData] = useState({
+    jobs: [],
+    experiences: [],
+    achievements: [],
+    awards: [],
+    certifications: [],
+    transferrable_skills: []
+  });
   const [error, setError] = useState(null);
 
   const handleParseResume = async () => {
@@ -25,80 +32,101 @@ const ResumeUpload = () => {
       const parsedData = await parseResumeWithOpenAI(resumeText);
   
       // Extract each category of data
-      const { jobs, experiences, achievements, awards, certifications } = parsedData;
+      const { jobs, experiences, achievements, awards, certifications, transferrable_skills } = parsedData;
   
-      // Insert jobs into `res_jobs` table and get job IDs for later use
+      // Insert jobs into `res_jobs` table - field names are already correct!
       for (const job of jobs) {
         const { data: jobData, error: jobError } = await supabase
           .from('res_jobs')
           .insert([{
             user_id: user.id,
-            job_title: job.title,
-            company: job.company,
-            start_date: job.startDate,
-            end_date: job.endDate,
+            job_title: job.title,      // Ensure OpenAI returns 'title'
+            company: job.company,       // Ensure OpenAI returns 'company'
+            start_date: job.startDate,  // Ensure OpenAI returns 'startDate'
+            end_date: job.endDate      // Ensure OpenAI returns 'endDate'
           }])
-          .select(); // Select returns inserted data including job ID
+          .select();
   
         if (jobError) throw jobError;
-        const jobId = jobData[0].id; // Assuming single insertion
-
-        // Insert experiences into `res_experiences` table, linking to job ID
+        const jobId = jobData[0].id;
+  
+        // Insert experiences into `res_experiences` table - field name matches!
         for (const experience of experiences) {
-          const { error: experienceError } = await supabase
+          const { data: expData, error: experienceError } = await supabase
             .from('res_experiences')
             .insert([{
-              job_id: jobId, // Link experience to the job ID
-              experience_text: experience.text
-            }]);
+              job_id: jobId,
+              experience_text: experience.text  // Ensure OpenAI returns 'text'
+            }])
+            .select();
+  
           if (experienceError) throw experienceError;
+  
+          // Insert associated transferable skill
+          if (experience.skill) {  // Ensure OpenAI returns a 'skill' property for each experience
+            const { error: skillError } = await supabase
+              .from('res_transferable_skills')
+              .insert([{
+                experience_id: expData[0].id,
+                skill_name: experience.skill
+              }]);
+  
+            if (skillError) throw skillError;
+          }
         }
       }
-
-      // Insert achievements into `res_achievements` table
+  
+      // Insert achievements - field names match!
       for (const achievement of achievements) {
         const { error: achievementError } = await supabase
           .from('res_achievements')
           .insert([{
             user_id: user.id,
-            achievement_name: achievement.name,
-            date_received: achievement.date,
-            description: achievement.description,
+            achievement_name: achievement.name,  // Ensure OpenAI returns 'name'
+            date_received: achievement.date,     // Ensure OpenAI returns 'date'
+            description: achievement.description
           }]);
   
         if (achievementError) throw achievementError;
       }
   
-      // Insert awards into `res_awards` table
+      // Insert awards - field names match!
       for (const award of awards) {
         const { error: awardError } = await supabase
           .from('res_awards')
           .insert([{
             user_id: user.id,
-            award_name: award.name,
-            date_received: award.date,
+            award_name: award.name,           // Ensure OpenAI returns 'name'
+            date_received: award.date,        // Ensure OpenAI returns 'date'
             description: award.description
           }]);
   
         if (awardError) throw awardError;
       }
   
-      // Insert certifications into `res_certifications` table
+      // Insert certifications - field names match!
       for (const certification of certifications) {
         const { error: certError } = await supabase
           .from('res_certifications')
           .insert([{
             user_id: user.id,
-            certification_name: certification.name,
-            date_received: certification.date,
+            certification_name: certification.name,           // Ensure OpenAI returns 'name'
+            date_received: certification.date,                // Ensure OpenAI returns 'date'
             description: certification.description,
-            issuing_organization: certification.organization,
+            issuing_organization: certification.organization  // Ensure OpenAI returns 'organization'
           }]);
   
         if (certError) throw certError;
       }
   
-      setParsedData(parsedData); // Display parsed data if needed
+      setParsedData({
+        jobs,
+        experiences,
+        achievements,
+        awards,
+        certifications,
+        transferrable_skills
+      });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -147,7 +175,14 @@ const ResumeUpload = () => {
                   {job.startDate && job.endDate && (
                     <p className="text-gray-400 text-sm">{job.startDate} - {job.endDate}</p>
                   )}
-                  <p className="text-gray-300">{job.description}</p>
+                  {parsedData.experiences.map((exp, expIndex) => (
+                    <div key={expIndex} className="mt-2">
+                      <p className="text-gray-300">{exp.text}</p>
+                      {exp.skill && (
+                        <p className="text-blue-400 text-sm mt-1">Transferable Skill: {exp.skill}</p>
+                      )}
+                    </div>
+                  ))}
                 </div>
               ))}
             </div>

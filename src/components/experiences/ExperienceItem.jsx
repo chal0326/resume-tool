@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../../lib/supabase';
 import { Button, Input } from '@nextui-org/react';
 import { motion } from 'framer-motion';
 

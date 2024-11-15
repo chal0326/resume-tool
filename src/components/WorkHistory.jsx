@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import JobSelection from './JobSelection';
@@ -12,6 +12,10 @@ const WorkHistory = () => {
   const [showJobModal, setShowJobModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchJobs();
+  }, []);
 
   const fetchJobs = async () => {
     try {
