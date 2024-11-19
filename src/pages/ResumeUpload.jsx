@@ -6,6 +6,7 @@ import { Button, Textarea } from '@nextui-org/react';
 import { parseResumeWithOpenAI } from '../lib/parseResume';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import { GlassButton } from './GlassButton';
 
 scan({
   enabled: true,
