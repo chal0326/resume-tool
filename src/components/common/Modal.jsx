@@ -1,6 +1,5 @@
 import { Modal as NextUIModal, Button } from '@nextui-org/react';
 import PropTypes from 'prop-types';
-import { GlassButton } from './GlassButton';
 
 const Modal = ({ show, onClose, title, children, onSubmit, submitText = "Submit" }) => {
   return (
@@ -8,10 +7,10 @@ const Modal = ({ show, onClose, title, children, onSubmit, submitText = "Submit"
       isOpen={show} 
       onClose={onClose}
       classNames={{
-        base: "bg-gray-900/90 dark:bg-gray-900/90 text-white",
+        base: "bg-white/20 dark:bg-white/20 backdrop-blur-xl border border-white/20",
         header: "border-b border-white/10",
         footer: "border-t border-white/10",
-        closeButton: "hover:bg-white/5 active:bg-white/10",
+        closeButton: "hover:bg-white/10 active:bg-white/20",
       }}
       backdrop="blur"
     >
@@ -19,28 +18,27 @@ const Modal = ({ show, onClose, title, children, onSubmit, submitText = "Submit"
         <h2 className="text-xl font-semibold text-white">{title}</h2>
       </NextUIModal.Header>
       <NextUIModal.Body>
-        {children}
+        <div className="text-white/90">
+          {children}
+        </div>
       </NextUIModal.Body>
       <NextUIModal.Footer>
-<<<<<<< HEAD
-        <Button
-          variant="light" 
-          onPress={onClose}
-          className="text-white/70 hover:text-white"
-        >
-          Cancel
-        </Button>
-        <Button
-          color="primary"
-          onPress={onSubmit}
-          className="bg-gradient-to-tr from-blue-500 to-purple-500"
-        >
-          {submitText}
-        </Button>
-=======
-        <GlassButton auto flat onClick={onClose}>Cancel</GlassButton>
-        <GlassButton auto onClick={onSubmit}>{submitText}</GlassButton>
->>>>>>> 64d2d7766f0d5d06f2d589a2f0cd163f8b740264
+        <div className="flex gap-2">
+          <Button
+            variant="light" 
+            onPress={onClose}
+            className="text-white/70 hover:text-white hover:bg-white/10"
+          >
+            Cancel
+          </Button>
+          <Button
+            color="primary"
+            onPress={onSubmit}
+            className="bg-gradient-to-tr from-blue-500 to-purple-500 text-white"
+          >
+            {submitText}
+          </Button>
+        </div>
       </NextUIModal.Footer>
     </NextUIModal>
   );
