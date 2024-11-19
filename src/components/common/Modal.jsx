@@ -1,5 +1,6 @@
 import { Modal as NextUIModal, Button } from '@nextui-org/react';
 import PropTypes from 'prop-types';
+import { GlassButton } from './GlassButton';
 
 const Modal = ({ show, onClose, title, children, onSubmit, submitText = "Submit" }) => {
   return (
@@ -21,6 +22,7 @@ const Modal = ({ show, onClose, title, children, onSubmit, submitText = "Submit"
         {children}
       </NextUIModal.Body>
       <NextUIModal.Footer>
+<<<<<<< HEAD
         <Button
           variant="light" 
           onPress={onClose}
@@ -35,6 +37,10 @@ const Modal = ({ show, onClose, title, children, onSubmit, submitText = "Submit"
         >
           {submitText}
         </Button>
+=======
+        <GlassButton auto flat onClick={onClose}>Cancel</GlassButton>
+        <GlassButton auto onClick={onSubmit}>{submitText}</GlassButton>
+>>>>>>> 64d2d7766f0d5d06f2d589a2f0cd163f8b740264
       </NextUIModal.Footer>
     </NextUIModal>
   );
