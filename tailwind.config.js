@@ -26,9 +26,16 @@ export default {
         yellow: '#F4B860',
         greyGreen: '#CAD2C5',
         deepBlueGreen: '#264653',
+        glass: {
+          light: 'rgba(255, 255, 255, 0.3)',
+          dark: 'rgba(0, 0, 0, 0.3)',
+        }
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+      },
+      backdropBlur: {
+        xs: '2px',
       }
     },
   },

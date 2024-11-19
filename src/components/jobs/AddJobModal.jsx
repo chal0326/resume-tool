@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Modal, Input, Button, Textarea } from '@nextui-org/react';
+import { Modal, Input, Button, Textarea, Checkbox } from '@nextui-org/react';
 
 const AddJobModal = ({ show, onClose, onAddJob }) => {
   const initialState = {
@@ -60,43 +60,60 @@ const AddJobModal = ({ show, onClose, onAddJob }) => {
 
       <Modal.Body>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            label="Job Title"
-            name="job_title"
-            value={jobData.job_title}
-            onChange={handleChange}
-            required
-            fullWidth
-          />
-
-          <Input
-            label="Company"
-            name="company"
-            value={jobData.company}
-            onChange={handleChange}
-            required
-            fullWidth
-          />
-
-          <Input
-            label="Start Date"
-            name="start_date"
-            type="text"
-            value={jobData.start_date}
-            onChange={handleChange}
-            required
-            fullWidth
-          />
-
-          <div className="flex items-center mb-4">
-            <input
-              type="checkbox"
-              name="is_current"
-              checked={jobData.is_current}
+          <div className="space-y-4">
+            <Input
+              label="Job Title"
+              name="job_title"
+              value={jobData.job_title}
               onChange={handleChange}
-              className="mr-2"
+              required
+              variant="bordered"
+              classNames={{
+                input: "text-white/90",
+                label: "text-white/50",
+                inputWrapper: "border-white/20 hover:border-white/40 bg-white/5"
+              }}
             />
-            <label>is_current</label>
+
+            <Input
+              label="Company"
+              name="company"
+              value={jobData.company}
+              onChange={handleChange}
+              required
+              variant="bordered"
+              classNames={{
+                input: "text-white/90",
+                label: "text-white/50",
+                inputWrapper: "border-white/20 hover:border-white/40 bg-white/5"
+              }}
+            />
+
+            <Input
+              label="Start Date"
+              name="start_date"
+              type="month"
+              value={jobData.start_date}
+              onChange={handleChange}
+              required
+              variant="bordered"
+              classNames={{
+                input: "text-white/90",
+                label: "text-white/50",
+                inputWrapper: "border-white/20 hover:border-white/40 bg-white/5"
+              }}
+            />
+
+            <Checkbox
+              name="is_current"
+              isSelected={jobData.is_current}
+              onValueChange={(checked) => handleChange({
+                target: { name: 'is_current', type: 'checkbox', checked }
+              })}
+              className="text-white"
+            >
+              Current Position
+            </Checkbox>
           </div>
 
           {!jobData.current_job && (

@@ -80,15 +80,25 @@ const Experiences = ({ job }) => {
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold">Experiences at {job.company}</h2>
       
-      <div className="flex items-center space-x-4">
+      <div className="flex gap-4">
         <Input
           placeholder="Add a new experience"
           value={newExperience}
           onChange={(e) => setNewExperience(e.target.value)}
           onKeyPress={(e) => e.key === 'Enter' && handleAddExperience()}
-          fullWidth
+          variant="bordered"
+          classNames={{
+            input: "text-white/90",
+            inputWrapper: "border-white/20 hover:border-white/40 bg-white/5"
+          }}
         />
-        <Button auto onClick={handleAddExperience}>Add</Button>
+        <Button 
+          color="primary"
+          onClick={handleAddExperience}
+          className="bg-gradient-to-r from-blue-500 to-purple-500"
+        >
+          Add
+        </Button>
       </div>
 
       <div className="space-y-4">

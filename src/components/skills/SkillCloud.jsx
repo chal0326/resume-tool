@@ -3,11 +3,11 @@ import { useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Button } from '@nextui-org/react';
 import * as d3 from 'd3';
+import d3Cloud from 'd3-cloud'; // Add this import
 
 const SkillCloud = ({ userId }) => {
   const [loading, setLoading] = useState(false);
 
-  // Move draw function outside of generateCloud
   function draw(words, width, height) {
     d3.select("#skill-cloud")
       .append("svg")
@@ -29,45 +29,10 @@ const SkillCloud = ({ userId }) => {
   const generateCloud = async () => {
     setLoading(true);
     try {
-      // Fetch all transferable skills for the user
-      const { data: experiences, error: expError } = await supabase
-        .from('res_experiences')
-        .select(`
-          id,
-          res_transferable_skills (
-            skill_name
-          ),
-          job_id,
-          res_jobs!inner (
-            user_id
-          )
-        `)
-        .eq('res_jobs.user_id', userId);
+      // ... existing fetch code ...
 
-      if (expError) throw expError;
-
-      // Count skill occurrences
-      const skillCounts = {};
-      experiences.forEach(exp => {
-        exp.res_transferable_skills.forEach(skill => {
-          skillCounts[skill.skill_name] = (skillCounts[skill.skill_name] || 0) + 1;
-        });
-      });
-
-      // Convert to array for D3
-      const words = Object.entries(skillCounts).map(([text, value]) => ({
-        text,
-        size: 10 + (value * 10) // Scale the size based on occurrence
-      }));
-
-      // Clear previous visualization
-      d3.select("#skill-cloud").selectAll("*").remove();
-
-      // Set up the word cloud layout
-      const width = 800;
-      const height = 400;
-
-      const layout = d3.layout.cloud()
+      // Replace d3.layout.cloud() with d3Cloud()
+      const layout = d3Cloud()
         .size([width, height])
         .words(words)
         .padding(5)
