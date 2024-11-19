@@ -133,3 +133,25 @@ button:focus-visible {
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
+
+@layer components {
+  .glass-dark {
+    @apply bg-white/10 backdrop-blur-md border border-white/20;
+  }
+  
+  .glass-light {
+    @apply bg-white/30 backdrop-blur-md border border-white/30;
+  }
+  
+  .glass-card {
+    @apply glass-dark rounded-xl shadow-lg hover:bg-white/20 transition-all duration-300;
+  }
+  
+  .glass-input {
+    @apply bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg px-4 py-2 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30;
+  }
+  
+  .glass-button {
+    @apply bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-all duration-300;
+  }
+}

@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Input, Button, Card } from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
 import { useAuth } from '../../contexts/AuthContext';
+import GlassLoginBox from './GlassLoginBox';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -28,63 +29,58 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-deepBlueGreen p-4">
-      <Card
-        className="backdrop-blur-lg bg-opacity-30 border-0 p-8 max-w-md rounded-xl shadow-lg"
-        style={{
-          backgroundColor: "rgba(255, 255, 255, 0.2)",
-          boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
-        }}
-      >
-        <h3 className="text-2xl text-yellow text-center font-semibold mb-6">
-          Login
-        </h3>
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-4">
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-purple-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-blue-500/10 rounded-full blur-3xl"></div>
+      </div>
 
+      <GlassLoginBox>
         {error && (
-          <div className="bg-red-500 text-white p-3 rounded-lg mb-4">
+          <div className="bg-red-500/20 backdrop-blur-sm text-white p-3 rounded-lg mb-4">
             {error}
           </div>
         )}
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div className="mb-4">
-            <Input
+            <input
               type="email"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              aria-label="Email"
-              className="bg-opacity-20 bg-darkGreen placeholder:text-greyGreen text-olive"
+              className="w-full px-4 py-2 rounded bg-white/40 text-black placeholder-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           <div className="mb-6">
-            <Input
+            <input
               type="password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              aria-label="Password"
-              className="bg-opacity-20 bg-darkGreen placeholder:text-greyGreen text-olive"
+              className="w-full px-4 py-2 rounded bg-white/40 text-black placeholder-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           <Button
             type="submit"
-            className="w-full bg-yellow text-darkGreen hover:bg-olive"
+            className="w-full bg-white/50 text-black py-2 rounded hover:bg-white/70"
             disabled={isLoading}
           >
             {isLoading ? 'Logging in...' : 'Login'}
           </Button>
 
-          <p className="text-center text-greyGreen mt-4">Dont have an account?{' '}
-            <Link to="/register" className="text-yellow hover:underline">Register here
+          <p className="text-center text-white/70 mt-4">
+            Don't have an account?{' '}
+            <Link to="/register" className="text-white hover:underline">
+              Register here
             </Link>
           </p>
         </form>
-      </Card>
+      </GlassLoginBox>
     </div>
   );
 };

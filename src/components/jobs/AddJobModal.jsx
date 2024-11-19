@@ -50,132 +50,117 @@ const AddJobModal = ({ show, onClose, onAddJob }) => {
 
   return (
     <Modal 
-      open={show} 
+      show={show} 
       onClose={onClose}
-      className="bg-gray-800 text-white"
+      title="Add New Job"
+      onSubmit={handleSubmit}
+      submitText={loading ? 'Adding...' : 'Add Job'}
     >
-      <Modal.Header>
-        <h2 className="text-xl font-semibold">Add New Job</h2>
-      </Modal.Header>
+      <form className="space-y-4">
+        <Input
+          label="Job Title"
+          name="job_title"
+          value={jobData.job_title}
+          onChange={handleChange}
+          required
+          variant="bordered"
+          classNames={{
+            input: "text-white/90",
+            label: "text-white/50",
+            inputWrapper: "border-white/20 hover:border-white/40 bg-white/5"
+          }}
+        />
 
-      <Modal.Body>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-4">
-            <Input
-              label="Job Title"
-              name="job_title"
-              value={jobData.job_title}
-              onChange={handleChange}
-              required
-              variant="bordered"
-              classNames={{
-                input: "text-white/90",
-                label: "text-white/50",
-                inputWrapper: "border-white/20 hover:border-white/40 bg-white/5"
-              }}
-            />
+        <Input
+          label="Company"
+          name="company"
+          value={jobData.company}
+          onChange={handleChange}
+          required
+          variant="bordered"
+          classNames={{
+            input: "text-white/90",
+            label: "text-white/50",
+            inputWrapper: "border-white/20 hover:border-white/40 bg-white/5"
+          }}
+        />
 
-            <Input
-              label="Company"
-              name="company"
-              value={jobData.company}
-              onChange={handleChange}
-              required
-              variant="bordered"
-              classNames={{
-                input: "text-white/90",
-                label: "text-white/50",
-                inputWrapper: "border-white/20 hover:border-white/40 bg-white/5"
-              }}
-            />
+        <Input
+          label="Start Date"
+          name="start_date"
+          type="month"
+          value={jobData.start_date}
+          onChange={handleChange}
+          required
+          variant="bordered"
+          classNames={{
+            input: "text-white/90",
+            label: "text-white/50",
+            inputWrapper: "border-white/20 hover:border-white/40 bg-white/5"
+          }}
+        />
 
-            <Input
-              label="Start Date"
-              name="start_date"
-              type="month"
-              value={jobData.start_date}
-              onChange={handleChange}
-              required
-              variant="bordered"
-              classNames={{
-                input: "text-white/90",
-                label: "text-white/50",
-                inputWrapper: "border-white/20 hover:border-white/40 bg-white/5"
-              }}
-            />
+        <Checkbox
+          name="is_current"
+          isSelected={jobData.is_current}
+          onValueChange={(checked) => handleChange({
+            target: { name: 'is_current', type: 'checkbox', checked }
+          })}
+          className="text-white"
+        >
+          Current Position
+        </Checkbox>
 
-            <Checkbox
-              name="is_current"
-              isSelected={jobData.is_current}
-              onValueChange={(checked) => handleChange({
-                target: { name: 'is_current', type: 'checkbox', checked }
-              })}
-              className="text-white"
-            >
-              Current Position
-            </Checkbox>
-          </div>
-
-          {!jobData.current_job && (
-            <Input
-              label="End Date"
-              name="end_date"
-              type="text"
-              value={jobData.end_date}
-              onChange={handleChange}
-              fullWidth
-            />
-          )}
-
-          <Textarea
-            label="experience"
-            name="experience"
-            value={jobData.experience}
+        {!jobData.current_job && (
+          <Input
+            label="End Date"
+            name="end_date"
+            type="text"
+            value={jobData.end_date}
             onChange={handleChange}
-            minRows={3}
             fullWidth
           />
+        )}
 
-          <Textarea
-            label="Achievements (comma-separated)"
-            name="achievements"
-            placeholder="e.g., Exceeded sales goals, Managed a team of 10"
-            value={jobData.achievements}
-            onChange={handleChange}
-            minRows={2}
-            fullWidth
-          />
+        <Textarea
+          label="experience"
+          name="experience"
+          value={jobData.experience}
+          onChange={handleChange}
+          minRows={3}
+          fullWidth
+        />
 
-          <Textarea
-            label="Awards (comma-separated)"
-            name="awards"
-            placeholder="e.g., Employee of the Month, Top Performer"
-            value={jobData.awards}
-            onChange={handleChange}
-            minRows={2}
-            fullWidth
-          />
+        <Textarea
+          label="Achievements (comma-separated)"
+          name="achievements"
+          placeholder="e.g., Exceeded sales goals, Managed a team of 10"
+          value={jobData.achievements}
+          onChange={handleChange}
+          minRows={2}
+          fullWidth
+        />
 
-          <Textarea
-            label="Certifications (comma-separated)"
-            name="certifications"
-            placeholder="e.g., PMP, Six Sigma"
-            value={jobData.certifications}
-            onChange={handleChange}
-            minRows={2}
-            fullWidth
-          />
-        </form>
-      </Modal.Body>
+        <Textarea
+          label="Awards (comma-separated)"
+          name="awards"
+          placeholder="e.g., Employee of the Month, Top Performer"
+          value={jobData.awards}
+          onChange={handleChange}
+          minRows={2}
+          fullWidth
+        />
 
-      <Modal.Footer>
-        <Button auto flat onClick={onClose} disabled={loading}>
-          Cancel
-        </Button>
-        <Button auto onClick={handleSubmit} disabled={loading}>
-          {loading ? 'Adding...' : 'Add Job'}
-        </Button>
-      </Modal.Footer>
+        <Textarea
+          label="Certifications (comma-separated)"
+          name="certifications"
+          placeholder="e.g., PMP, Six Sigma"
+          value={jobData.certifications}
+          onChange={handleChange}
+          minRows={2}
+          fullWidth
+        />
+      </form>
     </Modal>
   );
 };
