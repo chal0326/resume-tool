@@ -74,7 +74,7 @@ const Login = () => {
           </GlassButton>
 
           <p className="text-center text-white/70 mt-4">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link to="/register" className="text-white hover:underline">
               Register here
             </Link>

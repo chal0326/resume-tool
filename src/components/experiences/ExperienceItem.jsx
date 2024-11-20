@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { React,useState } from 'react';
 import PropTypes from 'prop-types';
 import { supabase } from '../../lib/supabase';
 import { Button, Input } from '@nextui-org/react';

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { React, useState, useEffect } from 'react';
 import { DashboardLayout } from '../components/layout';
 import { JobSelection } from '../components/jobs';
 import { Experiences } from '../components/experiences';

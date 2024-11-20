@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, React } from 'react';
 import PropTypes from 'prop-types';
 import { supabase } from '../../lib/supabase';
 import ExperienceItem from './ExperienceItem';

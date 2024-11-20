@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 const GlassInput = ({ type, placeholder }) => {
   return (
     <input
@@ -8,5 +10,10 @@ const GlassInput = ({ type, placeholder }) => {
     />
   );
 }
+
+GlassInput.propTypes = {
+  type: PropTypes.string.isRequired,
+  placeholder: PropTypes.string.isRequired,
+};
 
 export default GlassInput;

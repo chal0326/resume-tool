@@ -99,11 +99,9 @@ ${text}`;
         throw new Error('Invalid response structure: missing or invalid jobs array');
       }
       return jsonResult;
-    } catch (parseError) {
-      console.error('JSON Parse Error:', parsedContent);
+         } catch {
       throw new Error('Failed to parse OpenAI response as JSON');
     }
-
   } catch (error) {
     console.error("Error with OpenAI API:", error);
     throw error; // Re-throw to handle in the UI

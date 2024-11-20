@@ -1,7 +1,7 @@
 import { useState, React } from 'react';
 import PropTypes from 'prop-types';
-import { Textarea, Checkbox, GlassButton } from '@nextui-org/react';
-import { GlassModal, GlassInput } from '../common';
+import { Textarea, Checkbox } from '@nextui-org/react';
+import { GlassModal, GlassInput, GlassButton } from '../common';
 
 const AddJobModal = ({ show, onClose, onAddJob }) => {
   const initialState = {

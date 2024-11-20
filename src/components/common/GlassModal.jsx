@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 const GlassModal = ({ showModal, onClose, title, children }) => {
   if (!showModal) return null;
 
@@ -19,5 +21,12 @@ const GlassModal = ({ showModal, onClose, title, children }) => {
     </div>
   );
 }
+
+GlassModal.propTypes = {
+  showModal: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  title: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
+};
 
 export default GlassModal;

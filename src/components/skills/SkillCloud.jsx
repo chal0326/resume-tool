@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Button } from '@nextui-org/react';
 import * as d3 from 'd3';
 import d3Cloud from 'd3-cloud';
-
+import { supabase } from '../../lib/supabase';
 const SkillCloud = ({ userId }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
