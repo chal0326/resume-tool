@@ -1,3 +1,5 @@
+import React from 'react';
+
 export default function GlassLoginBox() {
     return (
       <div className="w-96 bg-white/30 backdrop-blur-md rounded-lg shadow-lg p-6">

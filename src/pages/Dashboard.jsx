@@ -1,4 +1,4 @@
-import  { useContext } from 'react';
+import { useContext, React } from 'react';
 import { supabase } from '../lib/supabase';
 import { Link } from 'react-router-dom';
 import { Button } from '@nextui-org/react';

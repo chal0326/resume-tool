@@ -1,19 +1,9 @@
-import { scan } from 'react-scan';
+import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Login from './components/auth/Login';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import WorkHistory from './components/WorkHistory';
-import ProtectedRoute from './protectedRoute';
-import ResumeUpload from './pages/ResumeUpload';
+import { Login, Register, AuthGuard } from './components/auth';
+import { MainLayout } from './components/layout';
+import { Dashboard, WorkHistory, ResumeUpload } from './pages';
 import { AuthProvider } from './contexts/AuthContext';
-import MainLayout from './components/layout/MainLayout';
-
-scan({
-  enabled: true,
-  log: true,
-  clearlLog: false,
-});
 
 const App = () => {
   return (
@@ -22,9 +12,9 @@ const App = () => {
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route element={
-          <ProtectedRoute>
+          <AuthGuard>
             <MainLayout />
-          </ProtectedRoute>
+          </AuthGuard>
         }>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/upload-resume" element={<ResumeUpload />} />

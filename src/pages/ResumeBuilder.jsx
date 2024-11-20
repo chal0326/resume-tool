@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { DashboardLayout } from '../components/layout';
-import { JobSelection, Experiences } from '../components';
+import { JobSelection } from '../components/jobs';
+import { Experiences } from '../components/experiences';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 

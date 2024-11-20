@@ -1,3 +1,4 @@
+import React from 'react';
 import { Modal as NextUIModal, Button } from '@nextui-org/react';
 import PropTypes from 'prop-types';
 

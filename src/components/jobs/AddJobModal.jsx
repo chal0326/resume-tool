@@ -1,18 +1,35 @@
-import { useState } from 'react';
+import { useState, React } from 'react';
 import PropTypes from 'prop-types';
-import { Modal, Input, Button, Textarea, Checkbox } from '@nextui-org/react';
+import { Textarea, Checkbox, GlassButton } from '@nextui-org/react';
+import { GlassModal, GlassInput } from '../common';
 
 const AddJobModal = ({ show, onClose, onAddJob }) => {
   const initialState = {
+    // res_jobs table
     job_title: '',
     company: '',
     start_date: '',
     end_date: '',
     is_current: false,
-    experience: '',
-    achievements: '',
-    awards: '',
-    certifications: ''
+    
+    // Related tables (will be inserted separately)
+    experiences: [{ text: '', skill: '' }],  // res_experiences & res_transferable_skills
+    achievements: [{ 
+      name: '', 
+      date: '', 
+      description: '' 
+    }],
+    awards: [{
+      name: '',
+      date: '',
+      description: ''
+    }],
+    certifications: [{
+      name: '',
+      date: '',
+      description: '',
+      organization: ''
+    }]
   };
 
   const [jobData, setJobData] = useState(initialState);
@@ -22,15 +39,42 @@ const AddJobModal = ({ show, onClose, onAddJob }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await onAddJob({
-        ...jobData,
-        start_date: jobData.start_date.substring(0, 7),
+      // Format the data to match Supabase schema
+      const formattedData = {
+        job_title: jobData.job_title,
+        company: jobData.company,
+        start_date: jobData.start_date.substring(0, 7),  // YYYY-MM format
         end_date: jobData.is_current ? null : 
           jobData.end_date ? jobData.end_date.substring(0, 7) : null,
-        achievements: jobData.achievements ? jobData.achievements.split(',') : [],
-        awards: jobData.awards ? jobData.awards.split(',') : [],
-        certifications: jobData.certifications ? jobData.certifications.split(',') : []
-      });
+        is_current: jobData.is_current,
+        
+        // Format related data
+        experiences: jobData.experiences.map(exp => ({
+          experience_text: exp.text,
+          transferable_skill: exp.skill
+        })),
+        
+        achievements: jobData.achievements.map(achievement => ({
+          achievement_name: achievement.name,
+          date_received: achievement.date,
+          description: achievement.description
+        })),
+
+        awards: jobData.awards.map(award => ({
+          award_name: award.name,
+          date_received: award.date,
+          description: award.description
+        })),
+
+        certifications: jobData.certifications.map(cert => ({
+          certification_name: cert.name,
+          date_received: cert.date,
+          description: cert.description,
+          issuing_organization: cert.organization
+        }))
+      };
+
+      await onAddJob(formattedData);
       setJobData(initialState);
       onClose();
     } catch (error) {
@@ -48,8 +92,26 @@ const AddJobModal = ({ show, onClose, onAddJob }) => {
     }));
   };
 
+  const handleExperienceChange = (index, field, value) => {
+    setJobData(prev => {
+      const newExperiences = [...prev.experiences];
+      newExperiences[index] = { 
+        ...newExperiences[index], 
+        [field]: value 
+      };
+      return { ...prev, experiences: newExperiences };
+    });
+  };
+
+  const addExperience = () => {
+    setJobData(prev => ({
+      ...prev,
+      experiences: [...prev.experiences, { text: '', skill: '' }]
+    }));
+  };
+
   return (
-    <Modal 
+    <GlassModal 
       show={show} 
       onClose={onClose}
       title="Add New Job"
@@ -57,7 +119,7 @@ const AddJobModal = ({ show, onClose, onAddJob }) => {
       submitText={loading ? 'Adding...' : 'Add Job'}
     >
       <form className="space-y-4">
-        <Input
+        <GlassInput
           label="Job Title"
           name="job_title"
           value={jobData.job_title}
@@ -71,7 +133,7 @@ const AddJobModal = ({ show, onClose, onAddJob }) => {
           }}
         />
 
-        <Input
+        <GlassInput
           label="Company"
           name="company"
           value={jobData.company}
@@ -85,7 +147,7 @@ const AddJobModal = ({ show, onClose, onAddJob }) => {
           }}
         />
 
-        <Input
+        <GlassInput
           label="Start Date"
           name="start_date"
           type="month"
@@ -112,7 +174,7 @@ const AddJobModal = ({ show, onClose, onAddJob }) => {
         </Checkbox>
 
         {!jobData.current_job && (
-          <Input
+          <GlassInput
             label="End Date"
             name="end_date"
             type="text"
@@ -160,8 +222,37 @@ const AddJobModal = ({ show, onClose, onAddJob }) => {
           minRows={2}
           fullWidth
         />
+
+        {/* Experiences Section */}
+        <div className="space-y-2">
+          <label className="text-white/90">Experiences</label>
+          {jobData.experiences.map((exp, index) => (
+            <div key={index} className="space-y-2">
+              <Textarea
+                label="Experience Description"
+                value={exp.text}
+                onChange={(e) => handleExperienceChange(index, 'text', e.target.value)}
+                minRows={2}
+                fullWidth
+              />
+              <GlassInput
+                label="Transferable Skill"
+                value={exp.skill}
+                onChange={(e) => handleExperienceChange(index, 'skill', e.target.value)}
+                fullWidth
+              />
+            </div>
+          ))}
+          <GlassButton
+            variant="secondary"
+            onClick={addExperience}
+            type="button"
+          >
+            Add Experience
+          </GlassButton>
+        </div>
       </form>
-    </Modal>
+    </GlassModal>
   );
 };
 

@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, React } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Button } from "@nextui-org/react";
 import { useAuth } from '../../contexts/AuthContext';
 import GlassLoginBox from './GlassLoginBox';
+import GlassButton from '../common/GlassButton';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -65,13 +65,13 @@ const Login = () => {
             />
           </div>
 
-          <Button
+          <GlassButton
             type="submit"
             className="w-full bg-white/50 text-black py-2 rounded hover:bg-white/70"
             disabled={isLoading}
           >
             {isLoading ? 'Logging in...' : 'Login'}
-          </Button>
+          </GlassButton>
 
           <p className="text-center text-white/70 mt-4">
             Don't have an account?{' '}

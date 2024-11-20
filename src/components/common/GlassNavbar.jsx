@@ -1,12 +1,24 @@
-export default function GlassNavbar() {
+import React from 'react';
+import PropTypes from 'prop-types';
+
+const GlassNavbar = ({ brand, links }) => {
   return (
     <nav className="w-full bg-white/30 backdrop-blur-lg shadow-md p-4 flex justify-between items-center">
-      <div className="text-white text-lg font-bold">Brand</div>
+      <div className="text-white text-lg font-bold">{brand}</div>
       <ul className="flex gap-4">
-        <li className="text-white/80 hover:text-white">Home</li>
-        <li className="text-white/80 hover:text-white">About</li>
-        <li className="text-white/80 hover:text-white">Contact</li>
+        {links?.map((link, index) => (
+          <li key={index} className="text-white/80 hover:text-white">
+            {link}
+          </li>
+        ))}
       </ul>
     </nav>
   );
-}
+};
+
+GlassNavbar.propTypes = {
+  brand: PropTypes.string.isRequired,
+  links: PropTypes.arrayOf(PropTypes.node).isRequired,
+};
+
+export default GlassNavbar;

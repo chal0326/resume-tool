@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, React } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
-import { Button, Textarea } from '@nextui-org/react';
+import { Textarea } from '@nextui-org/react';
 import { parseResumeWithOpenAI } from '../lib/parseResume';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import { GlassButton } from './GlassButton';
+import GlassButton from '../components/common/GlassButton';
 
 const ResumeUpload = () => {
   const { user } = useAuth();
@@ -161,13 +161,13 @@ const ResumeUpload = () => {
             className="mb-4"
           />
 
-          <Button
-            color="primary"
+          <GlassButton
+            variant="primary"
             onClick={handleParseResume}
             disabled={parsing || !resumeText.trim()}
           >
             {parsing ? 'Parsing...' : 'Parse Resume'}
-          </Button>
+          </GlassButton>
         </div>
 
         {error && (

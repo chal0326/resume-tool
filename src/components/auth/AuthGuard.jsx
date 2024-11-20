@@ -1,14 +1,15 @@
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
-export function AuthGuard({ children }) {
-  const { user, loading } = useAuth();
+const AuthGuard = ({ children }) => {
+  const { isLoading, user } = useAuth();
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      <div className="h-full flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
       </div>
     );
   }
@@ -18,8 +19,10 @@ export function AuthGuard({ children }) {
   }
 
   return <>{children}</>;
-}
+};
 
 AuthGuard.propTypes = {
   children: PropTypes.node.isRequired,
 };
+
+export default AuthGuard;

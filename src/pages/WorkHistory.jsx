@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, React } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
-import JobSelection from './jobs/JobSelection';
-import AddJobModal from './jobs/AddJobModal';
-import ParsedResumeView from './resume/ParsedResumeView';
-import SkillCloud from './skills/SkillCloud';
+import JobSelection from '../components/jobs/JobSelection';
+import AddJobModal from '../components/jobs/AddJobModal';
+import ParsedResumeView from '../components/resume/ParsedResumeView';
+import SkillCloud from '../components/skills/SkillCloud';
 
 const WorkHistory = () => {
   const { user } = useAuth();

@@ -1,48 +1,95 @@
+import React from 'react';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import { supabase } from '../../lib/supabase';
 import { Button } from '@nextui-org/react';
 import * as d3 from 'd3';
-import d3Cloud from 'd3-cloud'; // Add this import
+import d3Cloud from 'd3-cloud';
 
 const SkillCloud = ({ userId }) => {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  function draw(words, width, height) {
-    d3.select("#skill-cloud")
+  const fetchSkills = async () => {
+    const { data, error } = await supabase
+      .from('res_transferable_skills')
+      .select('skill_name')
+      .eq('user_id', userId);
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  };
+
+  const calculateFrequencies = (skills) => {
+    const frequencyMap = {};
+    skills.forEach(({ skill_name }) => {
+      frequencyMap[skill_name] = (frequencyMap[skill_name] || 0) + 1;
+    });
+
+    const words = Object.keys(frequencyMap).map((skill) => ({
+      text: skill,
+      size: frequencyMap[skill] * 10, // Adjust multiplier for size scaling
+      weight: frequencyMap[skill],
+    }));
+
+    return words;
+  };
+
+  const draw = (words, width, height) => {
+    // Clear any existing SVG
+    d3.select("#skill-cloud").select("svg").remove();
+
+    const svg = d3.select("#skill-cloud")
       .append("svg")
       .attr("width", width)
-      .attr("height", height)
-      .append("g")
-      .attr("transform", `translate(${width/2},${height/2})`)
-      .selectAll("text")
-      .data(words)
-      .enter()
-      .append("text")
-      .style("font-size", d => `${d.size}px`)
-      .style("fill", () => d3.schemeCategory10[~~(Math.random() * 10)])
-      .attr("text-anchor", "middle")
-      .attr("transform", d => `translate(${d.x},${d.y})rotate(${d.rotate})`)
-      .text(d => d.text);
-  }
+      .attr("height", height);
+
+    const g = svg.append("g")
+      .attr("transform", `translate(${width / 2},${height / 2})`);
+
+    words.forEach((word) => {
+      g.append("text")
+        .style("font-size", `${word.size}px`)
+        .style("font-weight", word.weight > 1 ? 'bold' : 'normal')
+        .style("fill", d3.schemeCategory10[Math.floor(Math.random() * 10)])
+        .attr("text-anchor", "middle")
+        .attr("transform", `translate(${word.x},${word.y})rotate(${word.rotate})`)
+        .text(word.text);
+    });
+  };
 
   const generateCloud = async () => {
     setLoading(true);
-    try {
-      // ... existing fetch code ...
+    setError(null);
 
-      // Replace d3.layout.cloud() with d3Cloud()
+    try {
+      const skillsData = await fetchSkills();
+
+      if (!skillsData.length) {
+        setError('No skills found for this user.');
+        return;
+      }
+
+      const words = calculateFrequencies(skillsData);
+
+      const width = 600;
+      const height = 400;
+
       const layout = d3Cloud()
         .size([width, height])
-        .words(words)
+        .words(words.map(d => ({ ...d })))
         .padding(5)
-        .rotate(() => (~~(Math.random() * 2) * 90))
+        .rotate(() => (Math.random() > 0.5 ? 90 : 0))
+        .font("Impact")
         .fontSize(d => d.size)
-        .on("end", words => draw(words, width, height));
+        .on("end", (wordsArr) => draw(wordsArr, width, height));
 
       layout.start();
-    } catch (error) {
-      console.error('Error generating skill cloud:', error);
+    } catch (err) {
+      console.error('Error generating skill cloud:', err);
+      setError('Failed to generate skill cloud. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -56,6 +103,7 @@ const SkillCloud = ({ userId }) => {
           color="primary"
           onClick={generateCloud}
           isLoading={loading}
+          disabled={loading}
         >
           {loading ? 'Generating...' : 'Generate Skill Cloud'}
         </Button>
@@ -66,6 +114,9 @@ const SkillCloud = ({ userId }) => {
       >
         {!loading && !document.querySelector("#skill-cloud svg") && (
           <p className="text-gray-400">Click generate to view your skill cloud</p>
+        )}
+        {error && (
+          <p className="text-red-500">{error}</p>
         )}
       </div>
     </div>

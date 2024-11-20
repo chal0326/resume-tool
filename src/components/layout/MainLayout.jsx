@@ -1,3 +1,4 @@
+import React from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link, useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { Button, Navbar, NavbarBrand, NavbarContent, NavbarItem, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar } from '@nextui-org/react';

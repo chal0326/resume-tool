@@ -1,4 +1,5 @@
-export default function GlassInput({ type, placeholder }: { type: string; placeholder: string }) {
+import React from 'react';
+const GlassInput = ({ type, placeholder }) => {
   return (
     <input
       type={type}
@@ -7,3 +8,5 @@ export default function GlassInput({ type, placeholder }: { type: string; placeh
     />
   );
 }
+
+export default GlassInput;
